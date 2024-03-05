@@ -1,0 +1,5 @@
+- name: Erster Durchlauf von gpupdate /force
+  ansible.windows.win_command: gpupdate /force
+
+- name: Zweiter Durchlauf von gpupdate /force
+  ansible.windows.win_command: gpupdate /force

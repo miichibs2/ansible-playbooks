@@ -1,4 +1,0 @@
-@echo off
-setlocal
-winget update powertoys
-endlocal

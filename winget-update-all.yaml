@@ -1,0 +1,4 @@
+    - name: Aktualisiere alle Programme
+      ansible.windows.win_shell: winget upgrade --all
+      args:
+        executable: powershell.exe
