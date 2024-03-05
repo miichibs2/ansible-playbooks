@@ -1,0 +1,8 @@
+- name: Deaktiviere BitLocker auf allen Laufwerken
+  ansible.windows.win_shell: |
+    $drives = Get-BitLockerVolume
+    foreach ($drive in $drives) {
+      Disable-BitLocker -MountPoint $drive.MountPoint
+    }
+  args:
+    executable: powershell.exe

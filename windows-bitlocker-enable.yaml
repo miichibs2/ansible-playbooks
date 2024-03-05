@@ -1,0 +1,14 @@
+- name: Aktiviere BitLocker auf allen internen Festplatten und lese den Wiederherstellungsschlüssel aus
+  ansible.windows.win_shell: |
+    $disks = Get-Disk | Where-Object BusType -Ne 'USB'
+    foreach ($disk in $disks) {
+      $letter = (Get-Partition -DiskNumber $disk.Number | Where-Object IsPrimary -Eq $true).DriveLetter
+      $mountPoint = $letter + ":"
+      if ((Get-BitLockerVolume -MountPoint $mountPoint).EncryptionPercentage -eq $null) {
+        Enable-BitLocker -MountPoint $mountPoint -UsedSpaceOnly -SkipHardwareTest -RecoveryPasswordProtector
+        $key = (Get-BitLockerVolume -MountPoint $mountPoint).KeyProtector | Where-Object {$_.KeyProtectorType -eq 'RecoveryPassword'}
+        Write-Host "$mountPoint Wiederherstellungsschlüssel: $($key.RecoveryPassword)"
+      }
+    }
+  args:
+    executable: powershell.exe
