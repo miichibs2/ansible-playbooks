@@ -1,7 +1,8 @@
 ---
 - name: Check disk space
   hosts: all
-
+  become: yes
+  
   tasks:
     - name: Check disk space available
       ansible.builtin.shell:
