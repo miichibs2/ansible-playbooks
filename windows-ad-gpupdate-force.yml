@@ -1,5 +1,11 @@
-- name: Erster Durchlauf von gpupdate /force
-  win_command: gpupdate /force
+- name: Ausführen von gpupdate /force auf allen Windows-Hosts
+  #hosts: all  # oder Ihre spezifische Gruppe von Windows-Hosts
+  debugger: never
+  tasks:
+    - name: Erster Durchlauf von gpupdate /force
+      win_command: gpupdate /force
+      debugger: on_failed
 
-- name: Zweiter Durchlauf von gpupdate /force
-  win_command: gpupdate /force
+    - name: Zweiter Durchlauf von gpupdate /force
+      win_command: gpupdate /force
+      debugger: on_failed
