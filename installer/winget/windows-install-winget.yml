@@ -1,0 +1,45 @@
+---
+- name: Install Essentials on Windows
+  hosts: windows_hosts
+  tasks:
+    - name: Create script directory if it does not exist
+      ansible.windows.win_file:
+        path: C:\skripts\postsetup
+        state: directory
+
+    - name: Install Winget
+      block:
+        - name: Fetch the latest release info for Winget
+          ansible.windows.win_uri:
+            url: https://api.github.com/repos/microsoft/winget-cli/releases/latest
+            method: GET
+            return_content: yes
+          register: winget_release_info
+
+        - name: Set download URLs
+          set_fact:
+            download_url_winget: "{{ winget_release_info.json.assets | selectattr('name', 'match', '^Microsoft.DesktopAppInstaller_.*\\.msixbundle$') | map(attribute='browser_download_url') | first }}"
+            download_url_vclibs: "https://aka.ms/Microsoft.VCLibs.x64.14.00.Desktop.appx"
+            download_url_uixaml: "https://github.com/microsoft/microsoft-ui-xaml/releases/download/v2.7.3/Microsoft.UI.Xaml.2.7.x64.appx"
+
+        - name: Download Winget and dependencies
+          ansible.windows.win_get_url:
+            url: "{{ item.url }}"
+            dest: "C:\\skripts\\postsetup\\{{ item.dest }}"
+          loop:
+            - { url: "{{ download_url_winget }}", dest: "WingetLatest.appxbundle" }
+            - { url: "{{ download_url_vclibs }}", dest: "WingetdependanceVCLibs.appx" }
+            - { url: "{{ download_url_uixaml }}", dest: "WingetdependanceuiXaml.appx" }
+
+        - name: Install Winget and dependencies
+          ansible.windows.win_package:
+            path: "C:\\skripts\\postsetup\\{{ item }}"
+            state: present
+          loop:
+            - "WingetdependanceVCLibs.appx"
+            - "WingetdependanceuiXaml.appx"
+            - "WingetLatest.appxbundle"
+      rescue:
+        - name: Failed to install Winget
+          ansible.builtin.debug:
+            msg: "Failed to install Winget. Check previous steps for errors."
