@@ -12,7 +12,7 @@
 
     - name: Copy fail2ban config file
       ansible.builtin.copy:
-        src: files/configfiles/debian-sshd-default.conf
+        src: configfiles/debian-sshd-default.conf
         dest: /etc/fail2ban/jail.d/debian-sshd-default.conf
         mode: '0644'
         owner: root
