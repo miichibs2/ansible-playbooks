@@ -1,9 +1,23 @@
 ---
 - name: Clean docker
   hosts: all
-  become: yes
   
   tasks:
+    - name: Check if user 'ansible' is in the Docker group
+      ansible.builtin.getent:
+        become: yes
+        database: group
+        key: docker
+      register: docker_group
+
+    - name: Add user 'ansible' to the Docker group
+      ansible.builtin.user:
+        become: yes
+        name: ansible
+        groups: docker
+        append: yes
+      when: "'ansible' not in docker_group['getent_group'][3]"
+
     - name: Prune non-dangling images
       community.docker.docker_prune:
         containers: false
