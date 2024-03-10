@@ -22,6 +22,6 @@
         winget install --id {{ item }} --accept-package-agreements --accept-source-agreements --exact --silent
       loop:
         - 'Git.Git'
-        - 'Microsoft.PowerToys'  # Hinzufügen von PowerToys zur Installation
+        - 'Microsoft.PowerToys'
       register: winget_output
       failed_when: "'Completed' not in winget_output.stdout"
