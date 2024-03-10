@@ -1,0 +1,27 @@
+---
+- name: read-wireguard-key-pair
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Display private key
+      ansible.builtin.shell: cat privatekey
+      register: private_key
+      changed_when: false
+      ignore_errors: true
+    
+    - name: Display public key
+      ansible.builtin.shell: cat publickey
+      register: public_key
+      changed_when: false
+      ignore_errors: true
+    
+    - name: Show private key
+      ansible.builtin.debug:
+        msg: "Private Key: {{ private_key.stdout }}"
+      ignore_errors: true
+    
+    - name: Show public key
+      ansible.builtin.debug:
+        msg: "Public Key: {{ public_key.stdout }}"
+      ignore_errors: true
