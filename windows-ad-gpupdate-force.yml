@@ -1,8 +1,11 @@
+---
 - name: Ausführen von gpupdate /force auf allen Windows-Hosts
-  hosts: STNW-Win-Clients
+  hosts: all
   tasks:
     - name: Erster Durchlauf von gpupdate /force
       win_command: gpupdate /force
+      when: ansible_os_family == "Windows"
 
     - name: Zweiter Durchlauf von gpupdate /force
       win_command: gpupdate /force
+      when: ansible_os_family == "Windows"
