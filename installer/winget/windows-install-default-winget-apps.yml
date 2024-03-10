@@ -1,0 +1,27 @@
+---
+- name: Install Winget default apps on Windows
+  hosts: windows_hosts
+  gather_facts: no
+  tasks:
+    - name: Install NuGet package provider if not present
+      ansible.windows.win_powershell:
+        script: |
+          if (-not (Get-PackageProvider -Name NuGet -ListAvailable -ErrorAction SilentlyContinue)) {
+              Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+          }
+
+    - name: Install BurntToast module if not present
+      ansible.windows.win_powershell:
+        script: |
+          if (-not (Get-Module -ListAvailable -Name BurntToast)) {
+              Install-Module -Name BurntToast -Force -SkipPublisherCheck
+          }
+
+    - name: Install default applications with Winget
+      ansible.windows.win_command: >
+        winget install --id {{ item }} --accept-package-agreements --accept-source-agreements --exact --silent
+      loop:
+        - 'Git.Git'
+        - 'Microsoft.PowerToys'  # Hinzufügen von PowerToys zur Installation
+      register: winget_output
+      failed_when: "'Completed' not in winget_output.stdout"
