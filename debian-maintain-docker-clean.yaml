@@ -4,18 +4,20 @@
   become: yes
 
   tasks:
-    - name: Check if user 'ansible' is in the Docker group
-      ansible.builtin.getent:
-        database: group
-        key: docker
-      register: docker_group
+- name: Check if user 'ansible' is in the Docker group
+  ansible.builtin.getent:
+    database: group
+    key: docker
+  register: docker_group
 
-    - name: Add user 'ansible' to the Docker group
-      ansible.builtin.user:
-        name: ansible
-        groups: docker
-        append: yes
-      when: "'ansible' not in docker_group['getent_group'][3]"
+- name: Add user 'ansible' to the Docker group
+  ansible.builtin.user:
+    name: ansible
+    groups: docker
+    append: yes
+  when: >
+    docker_group.getent_group is defined and
+    'ansible' not in docker_group.getent_group[3].split(',')
 
     - name: Prune non-dangling images
       community.docker.docker_prune:
