@@ -1,4 +1,5 @@
 - name: Ausführen von gpupdate /force auf allen Windows-Hosts
+  hosts: STNW Win Clients
   tasks:
     - name: Erster Durchlauf von gpupdate /force
       win_command: gpupdate /force
